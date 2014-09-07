@@ -93,16 +93,18 @@ function getUserInfo(id){
   return JSON.stringify(result);
 }
 
-function getFriendsList(user_id){
+function getFriendsList(id,limit_number){
   //get user from different countries
+  var user = JSON.parse(getUserInfo(id));
+  var result = '';
   var result = {};
   var query = "SELECT * FROM tbl_users ";
-  query += "WHERE ID = " + db.escape(id);
-  
+  query += "WHERE ID = " + db.escape(id) + " ";
+  query += "AND nationality <> " + user["nationality"] + " "; /*set different coutries*/
+  query += "ORDER BY RAND() LIMIT " + limit_number;
   cnn.query(query,function(error,rows,fields){
     if(error) throw "ERROR";
-    data = rows[0];
-    result["friendlist"] = data["friendlist"];
+    result = rows;
   });
   
   return JSON.stringify(result);
@@ -124,32 +126,28 @@ function likeAPicture(user_id,pic_id){/*作成中*/
   var query = "UPDATE tbl_pics ";
   query +="SET liked = " + db.escape('1');
   query += "WHERE ID = " + db.escape(pic_id);
-  query += ";";
-  /*query +="UPDATE tbl_user_" + user_id + "_updates ";
-  query +="SET "*/
 
   cnn.query(query,function(error,rows,fields){
     if(error) throw "ERROR";
     else{
+      //add updates to user
+      addUpdates(user_id,'pic',)
       returnSuccess(res);
     } 
   });
 }
 
-function addUpdates(user_id,type,info){/*作成中*/
+function addUpdates(user_id,_type,_info){/*作成中*/
   var query = '';
   
   /*save in to tbl_pics*/
   var result = {};
-  var post = {}
-  var query = "UPDATE tbl_user_" + db.escape(user_id) + "_updates ";
-  
+  var post = {type:_type, info:_info, checked: '0', init_date: now() };
+  var query = "INSERT INTO tbl_user_" + db.escape(user_id) + "_updates ";
+  query +="SET ? "
   query += "WHERE ID = " + db.escape(pic_id);
-  query += ";";
-  /*query +="UPDATE tbl_user_" + user_id + "_updates ";
-  query +="SET "*/
 
-  cnn.query(query,function(error,rows,fields){
+  cnn.query(query,post,function(error,rows,fields){
     if(error) throw "ERROR";
     else{
       returnSuccess(res);
