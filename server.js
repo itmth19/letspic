@@ -67,9 +67,11 @@ function responseTo(req,res){
         uploadFile(req,res);
       }
       break;
-    /*case "/user/like/pic":
-
-    case "/user/update/message":
+    case "/user/like/pic":
+      query = url_params.query;
+      likeAPicture(query["user_id"],query["pic_id"],res);
+      break;
+    /*case "/user/update/message":
     case "/user/send/message":
     case "/user/get/friends":*/
   }
@@ -100,7 +102,7 @@ function getFriendsList(id,limit_number){
   var result = {};
   var query = "SELECT * FROM tbl_users ";
   query += "WHERE ID = " + db.escape(id) + " ";
-  query += "AND nationality <> " + user["nationality"] + " "; /*set different coutries*/
+  query += "AND country <> " + user["nationality"] + " "; /*set different coutries*/
   query += "ORDER BY RAND() LIMIT " + limit_number;
   cnn.query(query,function(error,rows,fields){
     if(error) throw "ERROR";
@@ -108,6 +110,10 @@ function getFriendsList(id,limit_number){
   });
   
   return JSON.stringify(result);
+}
+
+function makeFriendWith(user_id,friend_id){
+  
 }
 
 function sendMessage(user_id,friend_id,message){
@@ -118,7 +124,7 @@ function sendMessage(user_id,friend_id,message){
   /*add updates to user's updates*/
 }
 
-function likeAPicture(user_id,pic_id){/*作成中*/
+function likeAPicture(user_id,pic_id,res){/*作成中*/
   var query = '';
   
   /*save in to tbl_pics*/
@@ -131,16 +137,20 @@ function likeAPicture(user_id,pic_id){/*作成中*/
     if(error) throw "ERROR";
     else{
       //add updates to user
-      addUpdates(user_id,'pic',)
-      returnSuccess(res);
+      info = {};
+      info["pic_id"] = pic_id;
+      info["friend_id"] = user_id;
+      if(addUpdates(user_id,'pic',JSON.stringify(info))){
+        returnSuccess(res);
+      }else{
+        returnError(res);
+      }
     } 
   });
 }
 
 function addUpdates(user_id,_type,_info){/*作成中*/
-  var query = '';
-  
-  /*save in to tbl_pics*/
+  /*save in to tbl_user_id_updates*/
   var result = {};
   var post = {type:_type, info:_info, checked: '0', init_date: now() };
   var query = "INSERT INTO tbl_user_" + db.escape(user_id) + "_updates ";
@@ -148,9 +158,11 @@ function addUpdates(user_id,_type,_info){/*作成中*/
   query += "WHERE ID = " + db.escape(pic_id);
 
   cnn.query(query,post,function(error,rows,fields){
-    if(error) throw "ERROR";
+    if(error){
+      return false;
+    }
     else{
-      returnSuccess(res);
+      return true;
     } 
   });
 }
@@ -166,7 +178,6 @@ function userRegistration(facebook_id,nationality,gener){
     if(error) throw "ERROR";
   });
   
-
 }
 
 function returnError(res){
