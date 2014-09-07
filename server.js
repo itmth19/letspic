@@ -3,8 +3,6 @@ var db = require('db-mysql');
 var my_http = require('http');
 var url = require('url');
 
-var sendpic = require('./sendpic');
-
 
 //Variables
 var port ='8888';
@@ -51,11 +49,10 @@ function responseTo(params,res){
   switch(params.pathname){
     case "/":
     case "/user":
-    case "/user/sendpic":
-    sendpic();
-    case "/user/update/like":
-    case "/user/update/message":
-    case "/user/message/send":
+    case "/user/sendpic"
+    case "/user/update/like"
+    case "/user/update/message"
+    case "/user/message/send"
   }
 }
 
@@ -65,3 +62,4 @@ function returnError(res){
   res.end();
 
 }
+
