@@ -136,13 +136,13 @@ function likeAPicture(user_id,pic_id){/*作成中*/
   });
 }
 
-function addUpdates(user_id,type,info){
+function addUpdates(user_id,type,info){/*作成中*/
   var query = '';
   
   /*save in to tbl_pics*/
   var result = {};
   var post = {}
-  var query = "UPDATE tbl_user_" + user_id + "_updates ";
+  var query = "UPDATE tbl_user_" + db.escape(user_id) + "_updates ";
   
   query += "WHERE ID = " + db.escape(pic_id);
   query += ";";
@@ -160,7 +160,10 @@ function addUpdates(user_id,type,info){
 
 function userRegistration(facebook_id,nationality,gener){
   var query = '';
-  query = "INSERT IGNORE INTO tbl_users (FacebookID, country, sex) VALUES (" + facebook_id + ", '" + nationality + "', '" + gener + "');";
+  query = "INSERT IGNORE INTO tbl_users (FacebookID, country, sex) VALUES (";
+  query += db.escape(facebook_id) + ", '";
+  query += db.escape(nationality) + "', '";
+  query += db.escape(gener) + "');";
   cnn.query(query,function(error,fields){
     if(error) throw "ERROR";
   });
