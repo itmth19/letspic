@@ -69,7 +69,7 @@ function responseTo(req,res){
 
 function getUserInfo(id){
   var result = {};
-  var query = "SELETE * FROM tbl_users ";
+  var query = "SELECT * FROM tbl_users ";
   query += "WHERE ID = " + db.escape(id);
 
   cnn.query(query,function(error,rows,fields){
@@ -88,7 +88,7 @@ function getUserInfo(id){
 function getFriendsList(user_id){
   //get user from different countries
   var result = {};
-  var query = "SELETE * FROM tbl_users ";
+  var query = "SELECT * FROM tbl_users ";
   query += "WHERE ID = " + db.escape(id);
   
   cnn.query(query,function(error,rows,fields){
