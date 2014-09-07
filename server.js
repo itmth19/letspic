@@ -68,24 +68,36 @@ function responseTo(req,res){
 }
 
 function getUserInfo(id){
-  var query = "";
+  var result = {};
+  var query = "SELETE * FROM tbl_users ";
+  query += "WHERE ID = " + db.escape(id);
+
   cnn.query(query,function(error,rows,fields){
     if(error) throw error;
-    for(var i in rows){
-      console.log(rows[i].id);
-    }
+    
+    /*get the result*/
+    data = rows[0];
+    result["facebook_id"] = data['facebook_id'];
+    result["nationality"] = data['nationality'];
+    result["gender"] = data['gender'];
   });
+
+  return JSON.stringify(result);
 }
 
 function getFriendsList(user_id){
   //get user from different countries
-  var query = "";
+  var result = {};
+  var query = "SELETE * FROM tbl_users ";
+  query += "WHERE ID = " + db.escape(id);
+  
   cnn.query(query,function(error,rows,fields){
     if(error) throw error;
-    for(var i in rows){
-      console.log(rows[i].id);
-    }
+    data = rows[0];
+    result["friendlist"] = data["friendlist"];
   });
+  
+  return JSON.stringify(result);
 }
 
 function sendMessage(user_id,friend_id,message){
@@ -96,10 +108,23 @@ function sendMessage(user_id,friend_id,message){
   /*add updates to user's updates*/
 }
 
-function likeAPicture(user_id,pic_id){
+function likeAPicture(user_id,pic_id){/*作成中*/
   var query = '';
   
   /*save in to tbl_pics*/
+  var result = {};
+  var query = "UPDATE tbl_pics ";
+  query +="SET liked = " + db.escape('1');
+  query += "WHERE ID = " + db.escape(pic_id);
+  query += ";";
+  
+
+  cnn.query(query,function(error,rows,fields){
+    if(error) throw error;
+    else{
+      returnSuccess();
+    } 
+  });
 
   /*updates the user_id_updates */
 
@@ -110,11 +135,18 @@ function userRegistration(facebook_id,nationality,gener){
   /*updates tbl_users table*/
 
   /*create user's updates table*/
+
 }
 
 function returnError(res){
   res.writeHeader(404,{"Content-Type":"text/plain"});
   res.write('Not found');
+  res.end();
+}
+
+function returnSuccess(res){
+  res.writeHead(200, {'content-type': 'text/plain'});
+  res.write('OK');
   res.end();
 }
 
@@ -131,15 +163,11 @@ function uploadFile(req,res){
 
   /*override the events when finish uploading*/
   form.on('end',function(error){
-    res.writeHead(200, {'content-type': 'text/plain'});
-    res.write('OK');
-    res.end();
+    returnSuccess();
   });
 
   form.parse(req, function(err,fields,files){
-    res.writeHead(200, {'content-type': 'text/plain'});
-    res.write('Finished');
-    res.end();
+    returnSuccess();
   });
 
   return;
