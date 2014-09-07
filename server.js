@@ -160,20 +160,9 @@ function addUpdates(user_id,type,info){
 
 function userRegistration(facebook_id,nationality,gener){
   var query = '';
-  query = "SELECT FacebookID FROM tbl_users WHERE FacebookID = " + facebook_id + ";";
-  cnn.query(query,function(error,rows,fields){
+  query = "INSERT IGNORE INTO tbl_users (FacebookID, country, sex) VALUES (" + facebook_id + ", '" + nationality + "', '" + gener + "');";
+  cnn.query(query,function(error,fields){
     if(error) throw "ERROR";
-    //data = rows[0];
-    //result["friendlist"] = data["friendlist"];
-    if (rows[0] == null) {
-      // the user not exist
-      /*create user's updates table*/
-      query = "INSERT INTO tbl_users (FacebookID, country, sex) VALUES (" + facebook_id + ", '" + nationality + "', '" + gener + "');";
-    } else {
-      // the user exists
-      /*updates tbl_users table*/
-      query = "UPDATE tbl_users SET country = '" + nationality + "', sex = '" + gener + "';";
-    }
   });
   
 
