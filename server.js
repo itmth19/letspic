@@ -1,5 +1,5 @@
 var sys = require('sys');
-var db = require('db-mysql');
+var db = require('mysql');
 var my_http = require('http');
 var url = require('url');
 var sendpic = require('./sendpic');
@@ -27,16 +27,17 @@ var cnn = db.createConnection({
 cnn.connect();
 
 /*Handle database connection close*/
-cnn.on('close',function(error)){
+cnn.on('close',function(error){
   if(error){
     console.log('Connection closed unexpectedly!');
   }else{
     cnn.createConnection(cnn.config);
   }
-}
+});
 
 /*Create server*/
 my_http.createServer(function(req,res){
+  sys.puts('Request received!');
    responseTo(req,res);
 }).listen(port);
 
@@ -53,17 +54,24 @@ function responseTo(req,res){
   /*switch params*/
   switch(url_params.pathname){
     case "/":
+      sys.puts('Index');
+      returnSuccess(res);
+      break;
+      
     case "/user":
-    
+      sys.puts('/User');
+      break;
     case "/user/send/pic":
       /*if is post request*/
       if (req.method.toLowerCase() == 'post'){
         uploadFile(req,res);
       }
-    case "/user/like/pic":
+      break;
+    /*case "/user/like/pic":
+
     case "/user/update/message":
     case "/user/send/message":
-    case "/user/get/friends"
+    case "/user/get/friends":*/
   }
 }
 
@@ -73,7 +81,7 @@ function getUserInfo(id){
   query += "WHERE ID = " + db.escape(id);
 
   cnn.query(query,function(error,rows,fields){
-    if(error) throw error;
+    if(error) throw "ERROR";
     
     /*get the result*/
     data = rows[0];
@@ -92,7 +100,7 @@ function getFriendsList(user_id){
   query += "WHERE ID = " + db.escape(id);
   
   cnn.query(query,function(error,rows,fields){
-    if(error) throw error;
+    if(error) throw "ERROR";
     data = rows[0];
     result["friendlist"] = data["friendlist"];
   });
@@ -117,19 +125,38 @@ function likeAPicture(user_id,pic_id){/*作成中*/
   query +="SET liked = " + db.escape('1');
   query += "WHERE ID = " + db.escape(pic_id);
   query += ";";
-  
+  /*query +="UPDATE tbl_user_" + user_id + "_updates ";
+  query +="SET "*/
 
   cnn.query(query,function(error,rows,fields){
-    if(error) throw error;
+    if(error) throw "ERROR";
     else{
-      returnSuccess();
+      returnSuccess(res);
     } 
   });
-
-  /*updates the user_id_updates */
-
-  /*check if there are 2 likes => add to friend list*/
 }
+
+function addUpdates(user_id,type,info){
+  var query = '';
+  
+  /*save in to tbl_pics*/
+  var result = {};
+  var post = {}
+  var query = "UPDATE tbl_user_" + user_id + "_updates ";
+  
+  query += "WHERE ID = " + db.escape(pic_id);
+  query += ";";
+  /*query +="UPDATE tbl_user_" + user_id + "_updates ";
+  query +="SET "*/
+
+  cnn.query(query,function(error,rows,fields){
+    if(error) throw "ERROR";
+    else{
+      returnSuccess(res);
+    } 
+  });
+}
+
 
 function userRegistration(facebook_id,nationality,gener){
   /*updates tbl_users table*/
@@ -163,11 +190,11 @@ function uploadFile(req,res){
 
   /*override the events when finish uploading*/
   form.on('end',function(error){
-    returnSuccess();
+    returnSuccess(res);
   });
 
   form.parse(req, function(err,fields,files){
-    returnSuccess();
+    returnSuccess(res);
   });
 
   return;
