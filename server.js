@@ -147,7 +147,7 @@ function addUpdates(user_id,_type,_info){/*作成中*/
   query +="SET ? "
   query += "WHERE ID = " + db.escape(pic_id);
 
-  cnn.query(query,post,function(error,rows,fields){
+  cnn.query(query,[post],function(error,rows,fields){
     if(error) throw "ERROR";
     else{
       returnSuccess(res);
