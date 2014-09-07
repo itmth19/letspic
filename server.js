@@ -8,7 +8,7 @@ var sendpic = require('./sendpic');
 var port ='8888';
 var db_host = 'localhost';
 var db_user = 'root';
-var db_pass = 'root';
+var db_pass = '';
 var db_name = 'letspic';
 var db_port = '3306';
 
