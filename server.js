@@ -27,13 +27,13 @@ var cnn = db.createConnection({
 cnn.connect();
 
 /*Handle database connection close*/
-cnn.on('close',function(error)){
+cnn.on('close',function(error){
   if(error){
     console.log('Connection closed unexpectedly!');
   }else{
     cnn.createConnection(cnn.config);
   }
-}
+});
 
 /*Create server*/
 my_http.createServer(function(req,res){
@@ -63,7 +63,7 @@ function responseTo(req,res){
     case "/user/like/pic":
     case "/user/update/message":
     case "/user/send/message":
-    case "/user/get/friends"
+    case "/user/get/friends":
   }
 }
 
